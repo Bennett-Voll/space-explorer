@@ -1,0 +1,78 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  height: 100vh;
+}
+
+.space-container {
+  position: relative;
+}
+
+.space-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  background-image: url(https://c.pxhere.com/photos/7e/12/night_milkyway_night_sky_stars_clouds-92966.jpg!d);
+  background-position: center center;
+  background-size: cover;
+  /*
+    The panzoom library adds a transform attribute to the element in order to, well.. transform it.
+    We don't need this type of panzooming.
+    So we handle the actual panzooming ourself
+  */
+  transform: none !important;
+}
+
+.space-indicator {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
+
+.planet {
+  position: absolute;
+  background-size: cover;
+  background-position: center center;
+  background-color: #000;
+  border-radius: 50%;
+  transition: transform 300ms;
+  transform: scale(1);
+}
+
+.planet:hover {
+  transform: scale(1.5);
+  cursor: pointer;
+}
+
+#log {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+}
+
+#space-open-options {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+#space-options {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: red;
+  width: 420px;
+  z-index: 10;
+}
