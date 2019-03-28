@@ -11,7 +11,7 @@
         this work. Maybe
 */
 
-$.fn.selectize(function(settings) {
+$.fn.selectize(function (settings) {
   Selectize($(this), settings);
 });
 
@@ -24,10 +24,11 @@ class Global {
     this.initTime = new Date();
     this.timeLastRecalc = 0;
     this.timeLastFrame = new Date();
+    this.mouse = { x: 0, y: 0 };
+
     this.$document = $(document);
     this.$body = $(document.body);
     this.$log = $('<div id="log"></div>').appendTo(this.$body);
-    this.mouse = { x: 0, y: 0 };
 
     this.$document.on('mousemove', (e) => {
       this.mouse.x = e.pageX;
@@ -40,7 +41,7 @@ class Global {
     this.timeNow = (new Date()).getTime() - this.initTime.getTime();
     this.timeSinceLastRecalc = (this.timeNow - this.timeLastFrame.getTime());
     this.fps = 1000 / this.timeSinceLastRecalc;
-    
+
     this.timeLastRecalc = this.timeNow;
   }
 
@@ -71,6 +72,7 @@ class Global {
       this.$log.append(args[i]);
       if (i !== args.length - 1) this.$log.append(' ');
     }
+
     this.$log.append('<br>');
   }
 
@@ -123,20 +125,20 @@ ${name}
     const $default = $option.find('.default');
     const onChange2 = () => {
       const params = onChange($input, this.space);
-      
+
       $value.html(params.value);
     };
-    
+
     $input.on('change', onChange2);
-    
+
     $default.on('click', () => {
       $input.val(defVal);
       onChange2();
     });
-    
+
     this.$options.append($option);
   }
-  
+
   addSelectize(name, defVal, onChange, options = [], settings = {}) {
     const optionId = ~~(Math.random() * 100000000)
     const $option = $(`
@@ -165,17 +167,17 @@ ${options.map(e => `<option value="${e.value}">${e.text}</option>`).join('')}
     const $default = $option.find('.default');
     const onChange2 = () => {
       const params = onChange($input, this.space);
-      
+
       $value.html(params.value);
     };
-    
+
     $input.selectize(settings);
     $input[0].selectize.on('change', onChange2);
-    
+
     $default.on('click', () => {
       $input[0].selectize.setValue(defVal);
     });
-    
+
     this.$options.append($option);
   }
 }
@@ -194,7 +196,7 @@ class Space {
     this.time = 0;
     this.timeSpeed = 1;
     this.reference = {};
-    
+
     // setup variables for planets
     this.planets = [];
     this.planetsByName = {};
@@ -249,45 +251,28 @@ class Space {
       this.room.x = transform.x;
       this.room.y = transform.y;
     });
-
-    //     const update = () => {
-    //       if (
-    //         width !== this.$space.prop('clientWidth') ||
-    //         height !== this.$space.prop('clientHeight')
-    //       ) {
-    //         width = this.$space.prop('clientWidth');
-    //         height = this.$space.prop('clientHeight');
-
-    //         console.log('change!')
-    //         this.spaceSize = this.getSpaceSize();
-    //         this.setSpaceCenter();
-    //         this.setSpaceRatio(); 
-    //       }
-
-    //       requestAnimationFrame(update);
-    //     };
   }
-  
+
   newPlanet(settings) {
     // if type of orbitingBody is a string, then assume it's a planet name
     if (typeof settings.orbitingBody === 'string') {
       const orbitalBodyName = settings.orbitingBody.toLowerCase();
-      
+
       if (!this.planetsByName[orbitalBodyName]) {
         throw 'Specified orbital body doesn\'t exist!';
       }
-      
+
       settings.orbitingBody = this.planetsByName[orbitalBodyName];
     }
-    
+
     const id = this.lastPlanetId;
     const name = (settings.name || String(id)).toLowerCase();
     const planet = new Planet(settings);
-    
+
     if (this.planetsByName[name]) {
       throw 'Planet name already exists!';
     }
-    
+
     this.planets.push(planet);
     this.planetsByName[name] = planet;
     this.lastPlanetId += 1;
@@ -297,20 +282,20 @@ class Space {
     for (let i = 0; i < this.planets.length; i += 1) {
       this.planets[i].simulate();
     }
-    
+
     for (let i = 0; i < this.planets.length; i += 1) {
       this.planets[i].updateElement();
     }
   }
 
   // translate a x coordinate within the room to the view
-  xToView(x) {
+  translateXToView(x) {
     const r = this.room;
     return r.x + (x - (this.reference.x || 0)) * r.viewToSpaceRatio * r.zoomRatio;
   }
 
   // same with y
-  yToView(y) {
+  translateYToView(y) {
     const r = this.room;
     return r.y + (y - (this.reference.y || 0)) * r.viewToSpaceRatio * r.zoomRatio;
   }
@@ -333,88 +318,59 @@ class Space {
     this.timeSpeed = speed;
   }
 
-  setReference(reference) {
-    if (typeof reference === 'string') {
-      const referenceByName = reference.trim().toLowerCase();
-      if (!this.planetsByName[referenceByName]) {
-        throw 'Specified body doesn\'t exist!';
-      }
-      reference = this.planetsByName[referenceByName];
-    }
-    
+  getPlanetByName(planetName) {
+    return this.planetsByName[planetName];
+  }
+
+  setReferencePoint(planet) {
     this.reference = reference;
   }
 }
 
-/*
-  The class that represents a single planet
+/**
+ * A class simulating a point body's positions according to gravitational laws in a 255x255 environment.
+ */
+class PointBodySimulator {
+  /**
+   * 
+   * @param {Object} orbitalParameters 
+   */
+  constructor(orbitalParameters) {
+    this.apoapsis = orbitalParameters.apoapsis;
+    this.periapsis = orbitalParameters.periapsis;
 
-  @param settings There are a lot of settings. I won't go over all of them because
-                  I'm lazy
-*/
-class Planet {
-  constructor(settings) {
-
-    // do you know orbital mechanics bro?
-    this.apoapsis = settings.apoapsis;
-    this.periapsis = settings.periapsis;
-    this.semiMajorAxis = (settings.periapsis + settings.apoapsis) / 2;
+    this.semiMajorAxis = (orbitalParameters.periapsis + orbitalParameters.apoapsis) / 2;
     this.semiMinorAxis = (
       Math.sqrt(
         Math.pow(this.semiMajorAxis, 2) -
-        Math.pow(this.semiMajorAxis - settings.periapsis, 2)
+        Math.pow(this.semiMajorAxis - orbitalParameters.periapsis, 2)
       )
     );
-    this.eccentricity = (this.semiMajorAxis - settings.periapsis) / this.semiMajorAxis;
 
-    this.orbitalSpd = settings.orbitalSpd;
-    this.prevOrbitalSpd = this.orbitalSpd;
-    this.isPlanet = true;
-    this.orbitalRotation = settings.orbitalRotation || 0;
-    this.orbitingBody = settings.orbitingBody;
-    this.size = settings.size || 10;
-    this.relativeSize = this.size * settings.space.ratio;
+    this.eccentricity = (this.semiMajorAxis - orbitalParameters.periapsis) / this.semiMajorAxis;
+
+    this.orbitalSpd = orbitalParameters.orbitalSpd;
+    this.orbitalRotation = orbitalParameters.orbitalRotation || 0;
+
+    this.orbitingBody = orbitalParameters.orbitingBody;
 
     const a = this.semiMajorAxis;
     const b = this.semiMinorAxis;
 
+    // approxomite calculation for the circumference of an ellipse
     this.orbitCircumference = (
       4 * (a + b) * Math.pow(
         Math.PI / 4,
         (4 * a * b / Math.pow(a + b, 2))
       )
     );
-
-    this.$element = $('<div />');
-    this.$element.addClass('planet');
-    this.$element.data('planet', this);
-    this.$element.css({
-      width: this.relativeSize,
-      height: this.relativeSize,
-      backgroundImage: `url(${settings.background})`,
-    });
-    this.space = settings.space;
-    this.$space = this.space.$space;
-    this.$space.append(this.$element);
-
-    this.$indicator = $('<div />');
-    this.$indicator.addClass('space-indicator');
-    this.$indicator.appendTo(this.$space);
-
-    this.name = settings.name;
-    
-    this.x = 0;
-    this.y = 0;
-
-    // I just sctratched the surface and am already overwelmed
   }
 
-  meanAnomaly() {
-    const time = this.space.getTime();
-    return (time * 2 * Math.PI / this.orbitalSpd / 60) % (Math.PI * 2);
+  getMeanAnomaly(time) {
+    return (time * 2 * Math.PI / this.orbitalSpd) % (Math.PI * 2);
   }
 
-  trueAnomaly(meanAnomaly, eccentricity, accuracy = 9) {
+  getTrueAnomaly(meanAnomaly, eccentricity, accuracy = 9) {
     // some really complicated shit    
     const m = meanAnomaly;
     const ecc = eccentricity;
@@ -434,7 +390,7 @@ class Planet {
     return v;
   }
 
-  radiusVector(trueAnomaly, eccentricity, semiMajorAxis) {
+  getRadiusVector(trueAnomaly, eccentricity, semiMajorAxis) {
     const a = semiMajorAxis;
     const e = eccentricity;
     const v = trueAnomaly;
@@ -444,11 +400,16 @@ class Planet {
     );
   }
 
-  simulate() {
-    // do all of this stuff and magic comes out
-    const meanAnomaly = this.meanAnomaly();
-    const trueAnomaly = this.trueAnomaly(meanAnomaly, this.eccentricity);
-    const radiusVector = this.radiusVector(
+  /**
+   * Get the position of this point body within a 255x255 grid.
+   * Takes time as an argument and spews out the positions at that time.
+   * 
+   * @param {Number} time In seconds 
+   */
+  getPosition(time) {
+    const meanAnomaly = this.getMeanAnomaly(time);
+    const trueAnomaly = this.getTrueAnomaly(meanAnomaly, this.eccentricity);
+    const radiusVector = this.getRadiusVector(
       trueAnomaly,
       this.eccentricity,
       this.semiMajorAxis,
@@ -456,6 +417,53 @@ class Planet {
 
     this.x = this.orbitingBody.x + radiusVector * Math.cos(trueAnomaly + this.orbitalRotation);
     this.y = this.orbitingBody.y + radiusVector * Math.sin(trueAnomaly + this.orbitalRotation);
+
+    return {
+      x: this.x,
+      y: this.y,
+    };
+  }
+}
+
+/*
+  The class that represents a single planet
+
+  @param settings There are a lot of settings. I won't go over all of them because
+                  I'm lazy
+*/
+class Planet {
+  constructor(settings) {
+    this.pointBodySimulator = new PointBodySimulator(settings);
+
+    this.$element = $('<div />');
+    this.$element.addClass('planet');
+    this.$element.data('planet', this);
+    this.$element.css({
+      width: this.relativeSize,
+      height: this.relativeSize,
+      backgroundImage: `url(${settings.background})`,
+    });
+    this.space = settings.space;
+    this.$space = this.space.$space;
+    this.$space.append(this.$element);
+
+    this.$indicator = $('<div />');
+    this.$indicator.addClass('space-indicator');
+    this.$indicator.appendTo(this.$space);
+
+    this.name = settings.name;
+
+    this.x = 0;
+    this.y = 0;
+
+    // I just sctratched the surface and am already overwelmed
+  }
+
+  simulate() {
+    const position = this.pointBodySimulator.getPosition(this.space.getTime() / 60);
+
+    this.x = position.x;
+    this.y = position.y;
   }
 
   updateElement() {
@@ -466,8 +474,8 @@ class Planet {
       height: actualSize,
     });
 
-    const y = Math.round((this.space.yToView(this.y) - actualSize / 2) * 10) / 10;
-    const x = Math.round((this.space.xToView(this.x) - actualSize / 2) * 10) / 10;
+    const y = Math.round((this.space.translateYToView(this.y) - actualSize / 2) * 10) / 10;
+    const x = Math.round((this.space.translateXToView(this.x) - actualSize / 2) * 10) / 10;
 
     this.$element.css({
       top: y,
@@ -475,8 +483,8 @@ class Planet {
     });
 
     this.$indicator.css({
-      top: this.space.yToView(this.y) - 5,
-      left: this.space.xToView(this.x) - 5,
+      top: this.space.translateYToView(this.y) - 5,
+      left: this.space.translateXToView(this.x) - 5,
     });
   }
 }
@@ -572,23 +580,23 @@ space.newPlanet({
 options.addSlider('time', 10, ($input, space) => {
   const value = $input.val();
   let newValue = 10 ** (value / 10 - 1);
-  
+
   space.setTimeSpeed(newValue);
-  
+
   let units = 's/s';
-  
+
   const minutes = newValue / 60;
   const hours = newValue / 60 / 60;
   const days = newValue / 60 / 60 / 24;
   const months = newValue / 60 / 60 / 24 / 31;
   const years = newValue / 60 / 60 / 24 / 365;
-  
+
   if (minutes > 1) { units = 'min/s'; newValue = minutes; }
   if (hours > 1) { units = 'hr/s'; newValue = hours; }
   if (days > 1) { units = 'day/s'; newValue = days; }
   if (months > 1) { units = 'month/s'; newValue = months; }
   if (years > 1) { units = 'yr/s'; newValue = years; }
-        
+
   if (newValue > 100) {
     newValue = ~~(newValue * 10) / 10;
   } else if (newValue > 1) {
@@ -596,7 +604,7 @@ options.addSlider('time', 10, ($input, space) => {
   } else {
     newValue = ~~(newValue * 10000) / 10000;
   }
-  
+
   return {
     value: newValue + units,
   };
@@ -607,19 +615,21 @@ planetOptions.unshift({ text: '', value: '' });
 
 options.addSelectize('reference', '', ($input, space) => {
   const value = $input[0].selectize.getValue();
-  
+
   if (value.trim() === '') {
-    space.setReference({});
-    
+    space.setReferencePoint({});
+
     return { value: 'global' };
   }
 
-  space.setReference(value);
-  
-  return { value: value, };  
+  const referencePlanet = space.getPlanetByName(value);
+
+  space.setReferencePoint(referencePlanet);
+
+  return { value: value, };
 }, planetOptions, {
-  allowEmptyOption: true,
-});
+    allowEmptyOption: true,
+  });
 
 function draw() {
   global.recalculate();
