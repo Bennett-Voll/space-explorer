@@ -5,63 +5,43 @@ import PointBodySimulator from './PointBodySimulator.js';
  */
 class Planet {
     /**
+     * Dimensional parameters given in the settings object must be bounded within a 255x255 grid
      * 
      * @param {Object} settings 
      */
     constructor(settings) {
         this.pointBodySimulator = new PointBodySimulator(settings);
+        
+        this.backgroundUrl = settings.background;
+        this.backgroundImg = new Image();
 
-        this.$element = $('<div />');
-        this.$element.addClass('planet');
-        this.$element.data('planet', this);
-        this.$element.css({
-            width: this.relativeSize,
-            height: this.relativeSize,
-            backgroundImage: `url(${settings.background})`,
-        });
-        this.space = settings.space;
-        this.$space = this.space.$space;
-        this.$space.append(this.$element);
-
-        this.$indicator = $('<div />');
-        this.$indicator.addClass('space-indicator');
-        this.$indicator.appendTo(this.$space);
+        this.backgroundImg.src = this.backgroundUrl;
 
         this.name = settings.name || '';
 
+        this.size = settings.size;
+
         this.x = 0;
         this.y = 0;
-
-        // I just sctratched the surface and am already overwelmed
     }
 
-    simulate() {
-        const position = this.pointBodySimulator.getPosition(this.space.getTime() / 60);
+    simulate(timeInFrames) {
+        const position = this.pointBodySimulator.getPosition(timeInFrames / 60);
 
         this.x = position.x;
         this.y = position.y;
     }
 
-    updateElement() {
-        const actualSize = this.space.scaleToRoom(this.size);
-
-        this.$element.css({
-            width: actualSize,
-            height: actualSize,
-        });
-
-        const y = Math.round((this.space.translateYToView(this.y) - actualSize / 2) * 10) / 10;
-        const x = Math.round((this.space.translateXToView(this.x) - actualSize / 2) * 10) / 10;
-
-        this.$element.css({
-            top: y,
-            left: x,
-        });
-
-        this.$indicator.css({
-            top: this.space.translateYToView(this.y) - 5,
-            left: this.space.translateXToView(this.x) - 5,
-        });
+    /**
+     * Get the planet's draw properties bounded within a 255x255 grid
+     */
+    getPlanetDrawProperties() {
+        return {
+            x: this.x,
+            y: this.y,
+            size: this.size,
+            backgroundImg: this.backgroundImg,
+        };
     }
 }
 

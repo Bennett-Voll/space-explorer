@@ -15,47 +15,40 @@ class Space {
         this.timeSpeed = 1;
         this.referencePoint = {};
 
-        // setup variables for planets
         this.planets = [];
         this.planetsByName = {};
         this.lastPlanetId = 0;
 
-        // set the given element as our container
         this.isSpace = true;
         this.$container = $(element);
         this.$container.addClass('space-container');
 
-        // add a view from wich we view upon the room
-        this.$view = $('<div />');
+        this.$view = $('<canvas />');
+        this.$view.attr('width', this.$container.width());
+        this.$view.attr('height', this.$container.height());
         this.$view.addClass('space-view');
         this.$view.appendTo(this.$container);
+
+        this.ctx = this.$view[0].getContext('2d');
+
+        this.width = this.$container.width();
+        this.height = this.$container.height();
 
         // disable pagezoom on mobile
         this.$view.on('touchstart', e => e.preventDefault());
 
-        // set the space in which the planets are represented
-        // NOTE: no function has yet assigned to this room.
-        //       it exists purely to represent the space
-        this.$space = $('<div />');
-        this.$space.addClass('space-room');
-        this.$space.appendTo(this.$view);
-
-        // TODO: this attribute name 'room' is bad.
-        //       Change it to something more fitting
-        // in here we define the offset and the zoom ratios wich we'll use to translate a
-        // portion of the room to the window
         this.room = {
             x: 0,
             y: 0,
             size: size,
-            viewToSpaceRatio: this.$view.width() / size,
+            viewToSpaceRatio: this.$view.width() / 255,
             zoomRatio: 1,
         };
 
         const panZoom = panzoom(this.$view[0], {
             maxZoom: 100000,
             minZoom: 0.2,
-            zoomSpeed: 0.14,
+            zoomSpeed: 0.25 ,
         });
 
         // move view to center
@@ -72,37 +65,71 @@ class Space {
     }
 
     newPlanet(settings) {
-        // if type of orbitingBody is a string, then assume it's a planet name
         if (typeof settings.orbitingBody === 'string') {
-            const orbitalBodyName = settings.orbitingBody.toLowerCase();
-
-            if (!this.planetsByName[orbitalBodyName]) {
-                throw 'Specified orbital body doesn\'t exist!';
-            }
-
-            settings.orbitingBody = this.planetsByName[orbitalBodyName];
+            settings.orbitingBody = this.getPlanetByName(settings.orbitingBody);
         }
 
         const id = this.lastPlanetId;
         const name = (settings.name || String(id)).toLowerCase();
-        const planet = new Planet(settings);
 
-        if (this.planetsByName[name]) {
-            throw 'Planet name already exists!';
-        }
+        settings = this.scalePlanetDimensionalSettingsToRoom(settings);
+
+        const planet = new Planet(settings);
 
         this.planets.push(planet);
         this.planetsByName[name] = planet;
         this.lastPlanetId += 1;
     }
 
+    scalePlanetDimensionalSettingsToRoom(settings) {
+        settings.apoapsis *= 255 / this.room.size;
+        settings.periapsis *= 255 / this.room.size;
+        settings.size *= 255 / this.room.size;
+        
+        return settings;
+    }
+
     simulatePlanets() {
-        for (let i = 0; i < this.planets.length; i += 1) {
-            this.planets[i].simulate();
-        }
+        const ctx = this.ctx;
+        const width = this.width;
+        const height = this.height;
 
         for (let i = 0; i < this.planets.length; i += 1) {
-            this.planets[i].updateElement();
+            this.planets[i].simulate(this.time);
+        }
+
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.arc(50 - 5 / 2, 50 - 5 / 2, 5, 0, Math.PI * 2, true);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+
+        for (let i = 0; i < this.planets.length; i += 1) {
+            const draw = this.planets[i].getPlanetDrawProperties();
+
+            const x = this.translateXToView(draw.x);
+            const y = this.translateYToView(draw.y);
+            const size = this.scaleToRoom(draw.size);
+
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+
+            if (x < 0 || x > width || y < 0 || y > height || size < 1) {
+                continue;
+            }
+
+            ctx.save();
+            
+            ctx.beginPath();
+            ctx.arc(x, y, size / 2, 0, Math.PI * 2, true);
+            ctx.clip();
+            ctx.closePath();
+            ctx.drawImage(draw.backgroundImg, x - size / 2, y - size / 2, size, size);
+            
+            ctx.restore();
         }
     }
 
@@ -137,7 +164,7 @@ class Space {
     }
 
     getPlanetByName(planetName) {
-        return this.planetsByName[planetName];
+        return this.planetsByName[planetName.toLowerCase()];
     }
 
     setReferencePoint(planet) {
