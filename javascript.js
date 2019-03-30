@@ -20,7 +20,7 @@ $.fn.selectize(function (settings) {
 });
 
 const global = new Global;
-const space = new Space('body');
+const space = new Space('#space-container');
 const $spaceOptions = $('#space-options');
 const options = new SpaceOptions($spaceOptions, space);
 

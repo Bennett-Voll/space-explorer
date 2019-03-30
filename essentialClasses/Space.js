@@ -1,4 +1,5 @@
 import Planet from './Planet.js';
+import Tags from './Tags.js';
 
 /**
  * Space encapsulates all planets and draws the view
@@ -18,6 +19,8 @@ class Space {
         this.planets = [];
         this.planetsByName = {};
         this.lastPlanetId = 0;
+
+        this.tags = [];
 
         this.isSpace = true;
         this.$container = $(element);
@@ -75,6 +78,9 @@ class Space {
         settings = this.scalePlanetDimensionalSettingsToRoom(settings);
 
         const planet = new Planet(settings);
+        const tag = new Tags(this.$container, planet);
+
+        this.tags.push(tag);
 
         this.planets.push(planet);
         this.planetsByName[name] = planet;
@@ -111,12 +117,13 @@ class Space {
             const y = this.translateYToView(draw.y);
             const size = this.scaleToRoom(draw.size);
 
-            ctx.beginPath();
-            ctx.arc(x, y, 5, 0, Math.PI * 2, true);
-            ctx.closePath();
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-
+            if (x > 0 && x < width && y > 0 && y < height) {
+                this.tags[i].show();
+                this.tags[i].moveTo(x, y);
+            } else {
+                this.tags[i].hide();
+            }
+            
             if (x < 0 || x > width || y < 0 || y > height || size < 1) {
                 continue;
             }

@@ -24,6 +24,10 @@ class Planet {
         this.x = 0;
         this.y = 0;
     }
+    
+    getName() {
+        return this.name;
+    }
 
     simulate(timeInFrames) {
         const position = this.pointBodySimulator.getPosition(timeInFrames / 60);
