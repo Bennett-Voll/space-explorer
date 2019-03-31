@@ -112,33 +112,60 @@ class Space {
         ctx.clearRect(0, 0, width, height);
 
         for (let i = 0; i < this.planets.length; i += 1) {
-            const draw = this.planets[i].getPlanetDrawProperties();
+            const drawProps = this.planets[i].getPlanetDrawProperties();
+            const transDrawProps = this.transformPlanetDrawPropsToView(drawProps);
 
-            const x = this.translateXToView(draw.x);
-            const y = this.translateYToView(draw.y);
-            const size = this.scaleToRoom(draw.size);
+            const x = transDrawProps.x;
+            const y = transDrawProps.y;
+            const size = transDrawProps.size;
+            const backgroundImg = transDrawProps.backgroundImg;
 
-            if (x > 0 && x < width && y > 0 && y < height) {
+            if (this.planetDrawPropsAreInView(transDrawProps)) {
                 this.tags[i].show();
                 this.tags[i].moveTo(x, y);
+                
+                if (this.planetDrawPropsNotTooSmallInView(transDrawProps)) {
+
+                    ctx.save();
+            
+                    ctx.beginPath();
+                    ctx.arc(x, y, size / 2, 0, Math.PI * 2, true);
+                    ctx.clip();
+                    ctx.closePath();
+                    ctx.drawImage(backgroundImg, x - size / 2, y - size / 2, size, size);
+                    
+                    ctx.restore();
+
+                }
             } else {
                 this.tags[i].hide();
             }
-            
-            if (x < 0 || x > width || y < 0 || y > height || size < 1) {
-                continue;
-            }
-
-            ctx.save();
-            
-            ctx.beginPath();
-            ctx.arc(x, y, size / 2, 0, Math.PI * 2, true);
-            ctx.clip();
-            ctx.closePath();
-            ctx.drawImage(draw.backgroundImg, x - size / 2, y - size / 2, size, size);
-            
-            ctx.restore();
         }
+    }
+
+    transformPlanetDrawPropsToView(drawProps) {
+        return {
+            ...drawProps,
+            x: this.translateXToView(drawProps.x),
+            y: this.translateYToView(drawProps.y),
+            size: this.scaleToRoom(drawProps.size),
+        }
+    }
+
+    planetDrawPropsAreInView(drawProps) {
+        const width = this.width;
+        const height = this.height;
+
+        return (
+            drawProps.x + drawProps.size / 2 > 0 &&
+            drawProps.x - drawProps.size / 2 < width &&
+            drawProps.y + drawProps.size / 2 > 0 &&
+            drawProps.y - drawProps.size / 2 < height
+        );
+    }
+
+    planetDrawPropsNotTooSmallInView(drawProps) {
+        return drawProps.size > 1;
     }
 
     // translate a x coordinate within the room to the view
