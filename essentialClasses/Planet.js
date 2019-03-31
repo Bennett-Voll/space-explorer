@@ -1,4 +1,5 @@
 import PointBodySimulator from './PointBodySimulator.js';
+import Global from './Global.js';
 
 /**
  * Representative of a planet; places an element at the specified position according to zoom settings and time passed.
@@ -30,7 +31,7 @@ class Planet {
     }
 
     simulate(timeInFrames) {
-        const position = this.pointBodySimulator.getPosition(timeInFrames / 60);
+        const position = this.pointBodySimulator.getPosition(timeInFrames / Global.getFps());
 
         this.x = position.x;
         this.y = position.y;

@@ -19,7 +19,6 @@ $.fn.selectize(function (settings) {
   Selectize($(this), settings);
 });
 
-const global = new Global;
 const space = new Space('#space-container');
 const $spaceOptions = $('#space-options');
 const options = new SpaceOptions($spaceOptions, space);
@@ -162,8 +161,12 @@ options.addSelectize('reference', '', ($input, space) => {
     allowEmptyOption: true,
   });
 
+Global.initialize();
+
+console.log(space); 
+
 function draw() {
-  global.recalculate();
+  Global.recalculateFrameData();
   space.simulatePlanets();
   space.incrementTime();
 

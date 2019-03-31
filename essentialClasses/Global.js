@@ -1,14 +1,16 @@
 class Global {
-    constructor() {
+    static initialize() {
         // time at initialisation
-        this.initTime = new Date();
+        this.intialTime = new Date();
         this.timeLastRecalc = 0;
         this.timeLastFrame = new Date();
         this.mouse = { x: 0, y: 0 };
 
         this.$document = $(document);
         this.$body = $(document.body);
-        this.$log = $('<div id="log"></div>').appendTo(this.$body);
+        this.$log = $('<div />', {
+            id: 'log',
+        }).appendTo(this.$body);
 
         this.$document.on('mousemove', (e) => {
             this.mouse.x = e.pageX;
@@ -16,38 +18,47 @@ class Global {
         });
     }
 
-    // recalculate global data
-    recalculate() {
-        this.timeNow = (new Date()).getTime() - this.initTime.getTime();
-        this.timeSinceLastRecalc = (this.timeNow - this.timeLastFrame.getTime());
-        this.fps = 1000 / this.timeSinceLastRecalc;
+    static recalculateFrameData() {
+        this.timeNow = this.getUnixTime() - this.getInitialisationTime();
+        this.timeSinceLastFrame = this.timeNow - this.getTimeOfLastFrameSinceIntialisation();
+        this.fps = 1000 / this.timeSinceLastFrame;
 
         this.timeLastRecalc = this.timeNow;
     }
 
-    // return the time since the last recalculation
-    getTimeSinceLastRecalc() {
-        return this.timeSinceLastRecalc;
+    static getTimeSinceLastFrame() {
+        return this.timeSinceLastFrame;
     }
 
-    getFps() {
+    static getFps() {
         return this.fps;
     }
-
-    // time in ms since initialisation
-    getTimeNow() {
+    
+    static getTimeNow() {
         return this.timeNow;
     }
 
-    mouseX() {
+    static getUnixTime() {
+        return (new Date()).getTime();
+    }
+
+    static getInitialisationTime() {
+        return this.intialTime.getTime();
+    }
+
+    static getTimeOfLastFrameSinceIntialisation() {
+        return this.timeLastFrame.getTime();
+    }
+
+    static mouseX() {
         return this.mouse.x;
     }
 
-    mouseY() {
+    static mouseY() {
         return this.mouse.y;
     }
 
-    log(...args) {
+    static log(...args) {
         for (let i = 0; i < args.length; i++) {
             this.$log.append(args[i]);
             if (i !== args.length - 1) this.$log.append(' ');
@@ -56,7 +67,7 @@ class Global {
         this.$log.append('<br>');
     }
 
-    clearLog() {
+    static clearLog() {
         this.$log.html('');
     }
 }
