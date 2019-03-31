@@ -1,3 +1,4 @@
+import Global from './Global.js';
 import Planet from './Planet.js';
 import Tags from './Tags.js';
 
@@ -12,7 +13,7 @@ class Space {
      * @param {*} size 
      */
     constructor(element, size = 1481000) {
-        this.time = 0;
+        this.timeOffset = 0;
         this.timeSpeed = 1;
         this.referencePoint = {};
 
@@ -100,8 +101,12 @@ class Space {
         const width = this.width;
         const height = this.height;
 
+        const unixTimeFormat = 1000;
+
+        const time = this.getTime() / unixTimeFormat;
+
         for (let i = 0; i < this.planets.length; i += 1) {
-            this.planets[i].simulate(this.time);
+            this.planets[i].simulate(time);
         }
 
         ctx.clearRect(0, 0, width, height);
@@ -154,12 +159,8 @@ class Space {
         return size * r.viewToSpaceRatio * r.zoomRatio;
     }
 
-    incrementTime() {
-        this.time += this.timeSpeed;
-    }
-
     getTime() {
-        return this.time;
+        return Global.getUnixTime() + this.timeOffset;
     }
 
     setTimeSpeed(speed = 1) {
@@ -172,6 +173,14 @@ class Space {
 
     setReferencePoint(planet) {
         this.referencePoint = planet;
+    }
+
+    calculateTimeOffset() {
+        const timeSinceLastFrame = Global.getTimeSinceLastFrame();
+
+        if (this.timeSpeed !== 1) {
+            this.timeOffset += timeSinceLastFrame * this.timeSpeed - timeSinceLastFrame;
+        }
     }
 }
 

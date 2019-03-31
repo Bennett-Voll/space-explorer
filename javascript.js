@@ -161,14 +161,12 @@ options.addSelectize('reference', '', ($input, space) => {
     allowEmptyOption: true,
   });
 
-Global.initialize();
-
-console.log(space); 
+Global.initialize(); 
 
 function draw() {
   Global.recalculateFrameData();
+  space.calculateTimeOffset();
   space.simulatePlanets();
-  space.incrementTime();
 
   requestAnimationFrame(draw);
 }

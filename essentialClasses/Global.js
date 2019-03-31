@@ -2,8 +2,8 @@ class Global {
     static initialize() {
         // time at initialisation
         this.intialTime = new Date();
-        this.timeLastRecalc = 0;
-        this.timeLastFrame = new Date();
+        this.timeLastFrame = 0;
+        this.timeSinceLastFrame = 0;
         this.mouse = { x: 0, y: 0 };
 
         this.$document = $(document);
@@ -19,11 +19,11 @@ class Global {
     }
 
     static recalculateFrameData() {
-        this.timeNow = this.getUnixTime() - this.getInitialisationTime();
-        this.timeSinceLastFrame = this.timeNow - this.getTimeOfLastFrameSinceIntialisation();
+        this.timeNow = this.getUnixTime() - this.getInitTime();
+        this.timeSinceLastFrame = this.timeNow - this.getTimeOfLastFrameSinceInit();
         this.fps = 1000 / this.timeSinceLastFrame;
 
-        this.timeLastRecalc = this.timeNow;
+        this.timeLastFrame = this.timeNow;
     }
 
     static getTimeSinceLastFrame() {
@@ -34,7 +34,7 @@ class Global {
         return this.fps;
     }
     
-    static getTimeNow() {
+    static getTimeSinceIntit() {
         return this.timeNow;
     }
 
@@ -42,12 +42,12 @@ class Global {
         return (new Date()).getTime();
     }
 
-    static getInitialisationTime() {
+    static getInitTime() {
         return this.intialTime.getTime();
     }
 
-    static getTimeOfLastFrameSinceIntialisation() {
-        return this.timeLastFrame.getTime();
+    static getTimeOfLastFrameSinceInit() {
+        return this.timeLastFrame;
     }
 
     static mouseX() {

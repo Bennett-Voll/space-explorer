@@ -37,8 +37,8 @@ class PointBodySimulator {
         );
     }
 
-    getMeanAnomaly(time) {
-        return (time * 2 * Math.PI / this.orbitalSpd) % (Math.PI * 2);
+    getMeanAnomaly(timeInSeconds) {
+        return (timeInSeconds * 2 * Math.PI / this.orbitalSpd) % (Math.PI * 2);
     }
 
     getTrueAnomaly(meanAnomaly, eccentricity, accuracy = 9) {
