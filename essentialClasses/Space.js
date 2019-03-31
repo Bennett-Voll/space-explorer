@@ -106,10 +106,6 @@ class Space {
 
         ctx.clearRect(0, 0, width, height);
 
-        ctx.arc(50 - 5 / 2, 50 - 5 / 2, 5, 0, Math.PI * 2, true);
-        ctx.fillStyle = '#fff';
-        ctx.fill();
-
         for (let i = 0; i < this.planets.length; i += 1) {
             const draw = this.planets[i].getPlanetDrawProperties();
 
