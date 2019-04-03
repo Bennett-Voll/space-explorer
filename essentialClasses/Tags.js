@@ -15,15 +15,13 @@ class Tags {
     }
 
     hide() {
-        this.$tag.css({
-            opacity: 0,
-        });
+        this.$tag.removeClass('tag-visible');
+        this.$tag.addClass('tag-invisible');
     }
 
     show() {
-        this.$tag.css({
-            opacity: 1,
-        });
+        this.$tag.addClass('tag-visible');
+        this.$tag.removeClass('tag-invisible');
     }
 
     moveTo(x, y) {

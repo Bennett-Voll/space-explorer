@@ -81,6 +81,7 @@ space.newPlanet({
   size: 1390,
   name: 'Sun',
   space: space,
+  alwaysShowTag: true,
 });
 
 space.newPlanet({
