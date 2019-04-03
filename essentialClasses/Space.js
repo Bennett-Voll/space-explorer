@@ -17,6 +17,7 @@ class Space {
         this.timeSpeed = 1;
         this.referencePoint = {};
 
+
         
         this.planets = [];
         this.planetsByName = {};
