@@ -21,12 +21,22 @@ class Planet {
 
         this.size = settings.size;
 
+        this.alwaysShowTag = settings.alwaysShowTag;
+
         this.x = 0;
         this.y = 0;
+    }
+
+    shouldAlwaysShowTag() {
+        return this.alwaysShowTag;
     }
     
     getName() {
         return this.name;
+    }
+
+    getPointBodySimulator() {
+        return this.pointBodySimulator;
     }
 
     simulate(timeInSeconds) {

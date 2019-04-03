@@ -114,7 +114,8 @@ class Space {
         ctx.clearRect(0, 0, width, height);
 
         for (let i = 0; i < this.planets.length; i += 1) {
-            const drawProps = this.planets[i].getPlanetDrawProperties();
+            const planet = this.planets[i];
+            const drawProps = planet.getPlanetDrawProperties();
             const transDrawProps = this.transformPlanetDrawPropsToView(drawProps);
 
             const x = transDrawProps.x;
@@ -122,9 +123,18 @@ class Space {
             const size = transDrawProps.size;
             const backgroundImg = transDrawProps.backgroundImg;
 
+            const pointBodySimulator = planet.getPointBodySimulator();
+            const radiusVector = pointBodySimulator.getRadiusVector();
+            const alwaysShowTag = planet.shouldAlwaysShowTag();
+
             if (this.planetDrawPropsAreInView(transDrawProps)) {
-                this.tags[i].show();
-                this.tags[i].moveTo(x, y);
+
+                if ( ! alwaysShowTag && this.scaleToRoom(radiusVector) / this.$view.width() < 0.05) {
+                    this.tags[i].hide();
+                } else {
+                    this.tags[i].show();
+                    this.tags[i].moveTo(x, y);
+                }
                 
                 if (this.planetDrawPropsNotTooSmallInView(transDrawProps)) {
 

@@ -25,6 +25,8 @@ class PointBodySimulator {
 
         this.orbitingBody = orbitalParameters.orbitingBody;
 
+        this.radiusVector = 0;
+
         const a = this.semiMajorAxis;
         const b = this.semiMinorAxis;
 
@@ -37,11 +39,11 @@ class PointBodySimulator {
         );
     }
 
-    getMeanAnomaly(timeInSeconds) {
+    calcMeanAnomaly(timeInSeconds) {
         return (timeInSeconds * 2 * Math.PI / this.orbitalSpd) % (Math.PI * 2);
     }
 
-    getTrueAnomaly(meanAnomaly, eccentricity, accuracy = 9) {
+    calcTrueAnomaly(meanAnomaly, eccentricity, accuracy = 9) {
         // some really complicated shit    
         const m = meanAnomaly;
         const ecc = eccentricity;
@@ -61,7 +63,7 @@ class PointBodySimulator {
         return v;
     }
 
-    getRadiusVector(trueAnomaly, eccentricity, semiMajorAxis) {
+    calcRadiusVector(trueAnomaly, eccentricity, semiMajorAxis) {
         const a = semiMajorAxis;
         const e = eccentricity;
         const v = trueAnomaly;
@@ -71,6 +73,10 @@ class PointBodySimulator {
         );
     }
 
+    getRadiusVector() {
+        return this.radiusVector;
+    }
+
     /**
      * Get the position of this point body within a 255x255 grid.
      * Takes time as an argument and spews out the positions at that time.
@@ -78,13 +84,15 @@ class PointBodySimulator {
      * @param {Number} time In seconds 
      */
     getPosition(time) {
-        const meanAnomaly = this.getMeanAnomaly(time);
-        const trueAnomaly = this.getTrueAnomaly(meanAnomaly, this.eccentricity);
-        const radiusVector = this.getRadiusVector(
+        const meanAnomaly = this.calcMeanAnomaly(time);
+        const trueAnomaly = this.calcTrueAnomaly(meanAnomaly, this.eccentricity);
+        const radiusVector = this.calcRadiusVector(
             trueAnomaly,
             this.eccentricity,
             this.semiMajorAxis,
         );
+
+        this.radiusVector = radiusVector;
 
         this.x = this.orbitingBody.x + radiusVector * Math.cos(trueAnomaly + this.orbitalRotation);
         this.y = this.orbitingBody.y + radiusVector * Math.sin(trueAnomaly + this.orbitalRotation);
