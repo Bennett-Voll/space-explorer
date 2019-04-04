@@ -41,30 +41,40 @@ class Space {
         // disable pagezoom on mobile
         this.$view.on('touchstart', e => e.preventDefault());
 
-        this.room = {
-            x: 0,
-            y: 0,
-            size: size,
-            viewToSpaceRatio: this.$view.width() / 255,
+        this.view = {
+            offsetX: 0,
+            offsetY: 0,
+            width: this.$view.width(),
+            height: this.$view.height(),
+            size: Math.max(
+                this.$view.width(),
+                this.$view.height()
+            ),
             zoomRatio: 1,
         };
 
-        const panZoom = panzoom(this.$view[0], {
+        this.view.viewToSpaceRatio = this.view.size / 255;
+        
+        this.room = {
+            size: size,
+        };
+
+        this.panZoom = panzoom(this.$view[0], {
             maxZoom: 100000,
             minZoom: 0.2,
-            zoomSpeed: 0.25 ,
+            zoomSpeed: 0.25,
         });
 
         // move view to center
-        panZoom.moveTo(0, -this.$view.width() / 2 + this.$view.height() / 2);
+        this.panZoom.moveTo(0, -this.view.width / 2 + this.view.height / 2);
 
         // we'll handle the transforming for panzoom right here
-        panZoom.on('transform', (e) => {
+        this.panZoom.on('transform', (e) => {
             const transform = e.getTransform();
 
-            this.room.zoomRatio = transform.scale;
-            this.room.x = transform.x;
-            this.room.y = transform.y;
+            this.view.zoomRatio = transform.scale;
+            this.view.offsetX = transform.x;
+            this.view.offsetY = transform.y;
         });
     }
 
@@ -127,7 +137,7 @@ class Space {
 
             if (this.planetDrawPropsAreInView(transDrawProps)) {
 
-                if ( ! alwaysShowTag && this.scaleToRoom(radiusVector) / this.$view.width() < 0.05) {
+                if ( ! alwaysShowTag && this.scaleToRoom(radiusVector) / this.view.size < 0.01) {
                     this.tags[i].hide();
                 } else {
                     this.tags[i].show();
@@ -180,20 +190,23 @@ class Space {
 
     // translate a x coordinate within the room to the view
     translateXToView(x) {
-        const r = this.room;
-        return r.x + (x - (this.referencePoint.x || 0)) * r.viewToSpaceRatio * r.zoomRatio;
+        const v = this.view;
+        return v.offsetX + (x - (this.referencePoint.x || 0)) * v.viewToSpaceRatio * v.zoomRatio;
     }
 
     // same with y
     translateYToView(y) {
-        const r = this.room;
-        return r.y + (y - (this.referencePoint.y || 0)) * r.viewToSpaceRatio * r.zoomRatio;
+        const v = this.view;
+        return v.offsetY + (y - (this.referencePoint.y || 0)) * v.viewToSpaceRatio * v.zoomRatio;
     }
 
     // scale a size from the room to the view
     scaleToRoom(size) {
-        const r = this.room;
-        return size * r.viewToSpaceRatio * r.zoomRatio;
+        return size * this.view.viewToSpaceRatio * this.view.zoomRatio;
+    }
+
+    moveViewTo(x, y) {
+        this.panZoom.moveTo(x, y);
     }
 
     getTime() {
@@ -209,6 +222,14 @@ class Space {
     }
 
     setReferencePoint(planet) {
+        const drawProps = planet.getPlanetDrawProperties();
+        const transDrawProps = this.transformPlanetDrawPropsToView(drawProps);
+
+        this.moveViewTo(
+            transDrawProps.x,
+            transDrawProps.y
+        );
+
         this.referencePoint = planet;
     }
 
