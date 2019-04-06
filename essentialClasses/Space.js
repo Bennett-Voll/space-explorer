@@ -107,10 +107,6 @@ class Space {
     }
 
     simulatePlanets() {
-        const ctx = this.ctx;
-        const width = this.width;
-        const height = this.height;
-
         const unixTimeFormat = 1000;
 
         const time = this.getTime() / unixTimeFormat;
@@ -118,6 +114,12 @@ class Space {
         for (let i = 0; i < this.planets.length; i += 1) {
             this.planets[i].simulate(time);
         }
+    }
+
+    drawPlanets() {
+        const ctx = this.ctx;
+        const width = this.width;
+        const height = this.height;
 
         ctx.clearRect(0, 0, width, height);
 
@@ -231,6 +233,8 @@ class Space {
         );
 
         this.referencePoint = planet;
+
+        this.simulatePlanets();
     }
 
     calculateTimeOffset() {

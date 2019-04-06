@@ -168,6 +168,7 @@ function draw() {
   Global.recalculateFrameData();
   space.calculateTimeOffset();
   space.simulatePlanets();
+  space.drawPlanets();
 
   requestAnimationFrame(draw);
 }
