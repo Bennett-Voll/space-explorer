@@ -2,14 +2,21 @@
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+}
+
 body {
-  position: relative;
-  margin: 0;
-  height: 100vh;
+  height: 100%;
 }
 
 .space-container {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
 }
 
 .space-view {
@@ -28,29 +35,6 @@ body {
     So we handle the actual panzooming ourself
   */
   transform: none !important;
-}
-
-.space-indicator {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  border: 1px solid #fff;
-}
-
-.planet {
-  position: absolute;
-  background-size: cover;
-  background-position: center center;
-  background-color: #000;
-  border-radius: 50%;
-  transition: transform 300ms;
-  transform: scale(1);
-}
-
-.planet:hover {
-  transform: scale(1.5);
-  cursor: pointer;
 }
 
 #log {
@@ -75,4 +59,35 @@ body {
   background: red;
   width: 420px;
   z-index: 10;
+}
+
+.planet-tag {
+  position: absolute;
+  color: #fff;
+  z-index: 9;
+  vertical-align: middle;
+  transition-property: opacity;
+  transition-duration: 300ms;
+}
+
+.planet-tag.tag-invisible {
+  opacity: 0;
+}
+
+.planet-tag.tag-visible {
+  opacity: 0.7;
+}
+
+.planet-tag.tag-visible:hover {
+  opacity: 1;
+}
+
+.tag-arrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 5px;
+  border-style: solid;
+  border-width: 5px 20px 5px 0;
+  border-color: transparent #fff transparent transparent;
 }
