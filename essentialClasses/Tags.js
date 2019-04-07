@@ -30,6 +30,20 @@ class Tags {
             top: y - this.$tag.height() / 2,
         });
     }
+
+    getDrawProperties() {
+        return this.planet.getDrawProperties();
+    }
+
+    isAlwaysShown() {
+        return this.planet.shouldAlwaysShowTag();
+    }
+
+    getPlanetRadiusVector() {
+        const pointBodySimulator = this.planet.getPointBodySimulator();
+
+        return pointBodySimulator.getRadiusVector();
+    }
 }
 
 export default Tags;

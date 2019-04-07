@@ -49,7 +49,7 @@ class Planet {
     /**
      * Get the planet's draw properties bounded within a 255x255 grid
      */
-    getPlanetDrawProperties() {
+    getDrawProperties() {
         return {
             x: this.x,
             y: this.y,

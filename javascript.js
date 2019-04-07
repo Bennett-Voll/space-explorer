@@ -164,11 +164,16 @@ options.addSelectize('reference', '', ($input, space) => {
 
 Global.initialize(); 
 
+const view = space.getView();
+
 function draw() {
   Global.recalculateFrameData();
   space.calculateTimeOffset();
   space.simulatePlanets();
+
+  view.clearCanvas();
   space.drawPlanets();
+  space.drawTags();
 
   requestAnimationFrame(draw);
 }
