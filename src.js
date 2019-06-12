@@ -1,6 +1,7 @@
-import Global from './essentialClasses/Global.js';
-import Space from './essentialClasses/Space.js';
-import SpaceOptions from './essentialClasses/SpaceOptions.js';
+import $ from 'jquery';
+import Global from './src/Global.js';
+import Space from './src/Space.js.js';
+import SpaceOptions from './src/SpaceOptions.js.js';
 
 /*
   inspiration: https://martinwecke.de/
@@ -162,7 +163,7 @@ options.addSelectize('reference', '', ($input, space) => {
     allowEmptyOption: true,
   });
 
-Global.initialize(); 
+Global.initialize();
 
 const view = space.getView();
 

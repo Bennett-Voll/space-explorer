@@ -1,3 +1,5 @@
+import panzoom from 'panzoom';
+
 class View {
     constructor(width, height, parent) {
         this.$canvas = $('<canvas />');
@@ -46,7 +48,7 @@ class View {
             this.viewOffsetY = transform.y;
         });
     }
-    
+
     moveViewTo(x, y) {
         this.panZoom.moveTo(x, y);
     }
@@ -69,15 +71,15 @@ class View {
         if (
             this.drawPropsAreInView(transDrawProps) &&
             this.planetDrawPropsNotTooSmallInView(transDrawProps)
-        ) {            
+        ) {
             ctx.save();
-    
+
             ctx.beginPath();
             ctx.arc(x, y, size / 2, 0, Math.PI * 2, true);
             ctx.clip();
             ctx.closePath();
             ctx.drawImage(backgroundImg, x - size / 2, y - size / 2, size, size);
-            
+
             ctx.restore();
         }
     }
@@ -90,7 +92,7 @@ class View {
         const y = transDrawProps.y;
 
         const radiusVector = tag.getPlanetRadiusVector();
-        const isAlwaysShown = tag.isAlwaysShown(); 
+        const isAlwaysShown = tag.isAlwaysShown();
 
         if (this.drawPropsAreInView(transDrawProps)) {
             if ( ! isAlwaysShown && this.scaleToRoom(radiusVector) / this.size < 0.01) {
@@ -122,8 +124,8 @@ class View {
 
     /**
      * Give as argument an instance with an x and y property and the getDrawProperties method.
-     * 
-     * @param {Object} newReferencePoint 
+     *
+     * @param {Object} newReferencePoint
      */
     setReferencePoint(newReferencePoint) {
         this.compensateForReferencePointChange(newReferencePoint);
