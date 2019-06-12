@@ -1,0 +1,32 @@
+{
+  "name": "bennett-space",
+  "version": "1.0.0",
+  "description": "Explore space with this neat simulator. Altough it has yet to be finished",
+  "main": "javascript.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bennett-Voll/space-explorer.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bennett-Voll/space-explorer/issues"
+  },
+  "homepage": "https://github.com/Bennett-Voll/space-explorer#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "babelify": "^10.0.0",
+    "watchify": "^3.11.1"
+  },
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "jquery": "^3.4.1",
+    "panzoom": "^8.1.0",
+    "selectize": "^0.12.6"
+  }
+}

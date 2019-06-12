@@ -11,7 +11,7 @@ class Space {
     /**
      * 
      * @param {Object} element The element in which we'd like to simulate space
-     * @param {*} size 
+     * @param {Number} size 
      */
     constructor(element, size = 1481000) {
         this.timeOffset = 0;

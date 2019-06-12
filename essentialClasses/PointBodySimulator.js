@@ -27,6 +27,9 @@ class PointBodySimulator {
 
         this.radiusVector = 0;
 
+        this.id = PointBodySimulator.id;
+        PointBodySimulator.id += 1;
+
         const a = this.semiMajorAxis;
         const b = this.semiMinorAxis;
 
@@ -103,5 +106,7 @@ class PointBodySimulator {
         };
     }
 }
+
+PointBodySimulator.id = 0;
 
 export default PointBodySimulator;
