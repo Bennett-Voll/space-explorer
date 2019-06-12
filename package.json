@@ -4,7 +4,7 @@
   "description": "Explore space with this neat simulator. Altough it has yet to be finished",
   "main": "javascript.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "watchify src.js -t [ babelify --presets [ @babel/preset-env ] -o bundle.js"
   },
   "repository": {
     "type": "git",
