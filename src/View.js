@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import panzoom from 'panzoom';
 
 class View {

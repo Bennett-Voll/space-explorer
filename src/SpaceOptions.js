@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 /*
   Define space options, used to alter options to this space
 */
@@ -17,7 +19,7 @@ class SpaceOptions {
         const optionId = ~~(Math.random() * 100000000)
         const $option = $(`
   <div class="container-fluid option">
-  
+
   <div class="row clearfix">
   <label class="col-md-3">
   ${name}
@@ -26,12 +28,12 @@ class SpaceOptions {
   <input type="range" min="0" max="100" name="${optionId}" value="1" autocomplete="off" />
   </div>
   </div>
-  
+
   <div class="row clearfix">
   <div class="col-md-9 value"></div>
   <div class="col-md-3"><button class="btn btn-default default">Default</div>
   </div>
-  
+
   </div>
   `);
 
@@ -58,7 +60,7 @@ class SpaceOptions {
         const optionId = ~~(Math.random() * 100000000)
         const $option = $(`
   <div class="container-fluid option">
-  
+
   <div class="row clearfix">
   <label class="col-md-3">
   ${name}
@@ -69,12 +71,12 @@ class SpaceOptions {
   </select>
   </div>
   </div>
-  
+
   <div class="row clearfix">
   <div class="col-md-9 value"></div>
   <div class="col-md-3"><button class="btn btn-default default">Default</div>
   </div>
-  
+
   </div>
   `);
         const $input = $option.find('select');

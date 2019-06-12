@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 class Tags {
     constructor($parent, planet) {
         this.$tag = $('<div />', {

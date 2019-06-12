@@ -4,7 +4,7 @@
   "description": "Explore space with this neat simulator. Altough it has yet to be finished",
   "main": "javascript.js",
   "scripts": {
-    "watch": "watchify src.js -t [ babelify --presets [ @babel/preset-env ] -o bundle.js"
+    "watch": "watchify src.js -o bundle.js -t [ babelify --presets [ @babel/preset-env ] ]"
   },
   "repository": {
     "type": "git",

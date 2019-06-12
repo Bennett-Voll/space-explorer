@@ -1,7 +1,8 @@
 import $ from 'jquery';
+import selectize from 'selectize';
 import Global from './src/Global.js';
-import Space from './src/Space.js.js';
-import SpaceOptions from './src/SpaceOptions.js.js';
+import Space from './src/Space.js';
+import SpaceOptions from './src/SpaceOptions.js';
 
 /*
   inspiration: https://martinwecke.de/
@@ -15,10 +16,6 @@ import SpaceOptions from './src/SpaceOptions.js.js';
         a short time period, the zoomspeed will speed up. I can make
         this work. Maybe
 */
-
-$.fn.selectize(function (settings) {
-  Selectize($(this), settings);
-});
 
 const space = new Space('#space-container');
 const $spaceOptions = $('#space-options');

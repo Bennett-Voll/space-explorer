@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 class Global {
     static initialize() {
         // time at initialisation
@@ -33,7 +35,7 @@ class Global {
     static getFps() {
         return this.fps;
     }
-    
+
     static getTimeSinceIntit() {
         return this.timeNow;
     }

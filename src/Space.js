@@ -1,3 +1,4 @@
+import $ from 'jQuery';
 import Global from './Global.js';
 import View from './View.js';
 import Planet from './Planet.js';
@@ -9,9 +10,9 @@ import Tags from './Tags.js';
  */
 class Space {
     /**
-     * 
+     *
      * @param {Object} element The element in which we'd like to simulate space
-     * @param {Number} size 
+     * @param {Number} size
      */
     constructor(element, size = 1481000) {
         this.timeOffset = 0;
@@ -60,7 +61,7 @@ class Space {
         settings.apoapsis *= 255 / this.roomSize;
         settings.periapsis *= 255 / this.roomSize;
         settings.size *= 255 / this.roomSize;
-        
+
         return settings;
     }
 
